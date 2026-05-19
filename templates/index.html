@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Risk Assessment</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #e0f2fe 0%, #e2e8f0 100%); 
+            color: #334155;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 35px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(30, 41, 59, 0.1);
+            width: 100%;
+            max-width: 480px;
+            border-top: 8px solid #0284c7; 
+        }
+        .header-container {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        /* Vibrant emoji medical badge wrapper */
+        .medical-logo {
+            width: 65px;
+            height: 65px;
+            background-color: #e0f2fe;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-size: 32px; /* Perfect sizing for the emoji inside */
+            line-height: 1;
+            transition: transform 0.3s ease;
+        }
+        .container:hover .medical-logo {
+            transform: scale(1.05);
+        }
+        h2 { 
+            color: #0f172a;
+            margin: 0 0 5px 0;
+            font-size: 26px;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            color: #1e293b;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        .unit-hint {
+            font-size: 11px;
+            color: #64748b;
+            display: block;
+            margin-bottom: 6px;
+        }
+        input { 
+            width: 100%; 
+            padding: 10px 12px; 
+            box-sizing: border-box; 
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+        input:focus {
+            border-color: #0284c7;
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        button[type="submit"] { 
+            flex: 2;
+            padding: 14px; 
+            background: linear-gradient(135deg, #0284c7 0%, #1e3a8a 100%);
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 15px; 
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        button[type="submit"]:hover { 
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+            opacity: 0.95;
+        }
+        .btn-clear {
+            flex: 1;
+            padding: 14px;
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-clear:hover {
+            background-color: #e2e8f0;
+            color: #1e293b;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid;
+            line-height: 1.5;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .result-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .result-desc {
+            font-size: 14px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-container">
+            <div class="medical-logo">🩺</div>
+            <h2>Diabetes Risk Assessment</h2>
+            <div class="subtitle">Complete the fields below to analyze physiological markers.</div>
+        </div>
+        
+        <form id="assessmentForm" action="{{ url_for('predict')}}" method="post">
+            
+            <div class="form-group">
+                <label for="pregnancies">Pregnancies</label>
+                <span class="unit-hint">Number of times pregnant (0 for none or male individuals)</span>
+                <input type="number" min="0" id="pregnancies" name="pregnancies" value="{{ inputs.pregnancies if inputs else '' }}" required placeholder="e.g. 1" />
+            </div>
+            
+            <div class="form-group">
+                <label for="glucose">Plasma Glucose Concentration</label>
+                <span class="unit-hint">From a 2-hour oral glucose tolerance test (mg/dL)</span>
+                <input type="number" step="any" min="0" id="glucose" name="glucose" value="{{ inputs.glucose if inputs else '' }}" required placeholder="e.g. 115" />
+            </div>
+            
+            <div class="form-group">
+                <label for="blood_pressure">Diastolic Blood Pressure</label>
+                <span class="unit-hint">The lower pressure value matching resting state (mm Hg)</span>
+                <input type="number" step="any" min="0" id="blood_pressure" name="blood_pressure" value="{{ inputs.blood_pressure if inputs else '' }}" required placeholder="e.g. 72" />
+            </div>
+            
+            <div class="form-group">
+                <label for="skin_thickness">Triceps Skinfold Thickness</label>
+                <span class="unit-hint">Standard body-fat composition fold measurement (mm)</span>
+                <input type="number" step="any" min="0" id="skin_thickness" name="skin_thickness" value="{{ inputs.skin_thickness if inputs else '' }}" required placeholder="e.g. 23" />
+            </div>
+            
+            <div class="form-group">
+                <label for="insulin">2-Hour Serum Insulin</label>
+                <span class="unit-hint">Insulin concentration observed post-glucose loading (µIU/mL)</span>
+                <input type="number" step="any" min="0" id="insulin" name="insulin" value="{{ inputs.insulin if inputs else '' }}" required placeholder="e.g. 85" />
+            </div>
+            
+            <div class="form-group">
+                <label for="bmi">Body Mass Index (BMI)</label>
+                <span class="unit-hint">Weight-to-height scale metric (kg/m²)</span>
+                <input type="number" step="any" min="0" id="bmi" name="bmi" value="{{ inputs.bmi if inputs else '' }}" required placeholder="e.g. 28.4" />
+            </div>
+            
+            <div class="form-group">
+                <label for="age">Age</label>
+                <span class="unit-hint">Chronological age (Years)</span>
+                <input type="number" min="0" id="age" name="age" value="{{ inputs.age if inputs else '' }}" required placeholder="e.g. 34" />
+            </div>
+            
+            <div class="button-group">
+                <a href="{{ url_for('home') }}" class="btn-clear">Clear Fields</a>
+                <button type="submit">Analyze Profile</button>
+            </div>
+        </form>
+        
+        {% if prediction_title %}
+        <div class="result-box" style="background-color: {{ result_color }}0D; color: #1e293b; border-color: {{ result_color }};">
+            <div class="result-title" style="color: {{ result_color }};">{{ prediction_title }}</div>
+            <div class="result-desc">{{ prediction_desc }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
